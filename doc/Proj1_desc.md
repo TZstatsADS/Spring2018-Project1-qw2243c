@@ -1,7 +1,7 @@
 ## STAT GR5243 Spring 2018 Applied Data Science
 ### Project 1 An R Notebook Data Story on presidential inaugural speeches
 
-![image](../figs/GWspeech.jpg)
+![image](../figs/44Presidents iotacon.png)
 
 Inaugural speech is the first official speech of any president of United States. It is the first time the public get to hear the president's plan for the next 100 days or 4 years. Historians who studied [1][2] past presidential inaugural speeches concluded that the speeches persistently demonstrated American ideological values over time, with constant shifts of emphasis in different eras. Natural language processing and text mining are promising tools to derive new findings in this collection of historical documents. [3]
 
@@ -11,15 +11,11 @@ Inaugural speech is the first official speech of any president of United States.
 
 [3] Shahin, Saif. "When scale meets depth: Integrating natural language processing and textual analysis for studying digital corpora." Communication Methods and Measures 10.1 (2016): 28-50.
 
-### Challenge 
-
+![image](../figs/inauguration jfk.jpg)
+The inauguration is considered as one of the most important moments for U.S. Presidents. The newly elected president will be inducted into the president's position. The inaugural speech is the first official speech delivered by the president. 
+In this project, I have applied texting mining techniques to 58 inaugural speeches to explore the themes and concentration during their inauguration speech, and study the relation with historic events.
 In this project we will explore the texts of U. S. presidents' inaugrual speeches, from that of George Washington to that of Donald Trump which was delivered earlier this year. 
 
-You are tasked to explore the texts using tools from text mining and natural language processing such as sentiment analysis, topic modeling, etc, all available in `R` and write a small story about inaugural speeches of U.S. presidents on interesting trends and patterns identified by your analysis. 
-
-For this project, you will receive 59 inaugrual speeches that was scrapped from [The American Presidency Project](http://www.presidency.ucsb.edu/inaugurals.php). 
-
-Even though this is an individual project, you are **encouraged** to discuss online and exchange ideas. 
 
 The data set released contain:
 
@@ -27,12 +23,6 @@ The data set released contain:
 + `InaugrationDates.txt`: dates information about the presidential inaugrations. 
 + `inaug[president]-[term].txt`: plain text files of the transcripts of inaugrual speeches. 
 
-#### Submission
-You should produce an R notebook (rmd and html files) in your GitHub project folder, where you should write a story or a blog post on presidential inaugural speeches based on your data analysis. Your story should be supported by your results and appropriate visualization
-
-### Project organization
-
-A GitHub starter codes repo will be posted on piazza for you to fork and start your own project. The GitHub repo will come with suggested *milestones*. 
 
 #### Useful resources
 
