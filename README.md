@@ -1,7 +1,8 @@
 # Spring 2018
 # Project 1: What did the presidents say at their inauguation?
 
-![image](figs/44Presidents iotacon.png)
+
+![image](figs/44Presidents.png)
 
 ### [Project Description](doc/)
 This is the first and only *individual* (as opposed to *team*) this semester. 
@@ -13,7 +14,7 @@ Term: Spring 2018
 
 + Project summary: The inauguration is considered as one of the most important moments for U.S. Presidents. The newly elected president will be inducted into the president's position. The inaugural speech is the first official speech delivered by the president. 
 
-![image](figs/inauguration jfk.jpg)
+![image](figs/inaugurationjfk.jpg)
 
 The purpose is to take close look into the Presidents' Inaugural speeches and find out the associations with the history. I'm also interested to know if the inaugural speeches influence the history in turn. 
 
