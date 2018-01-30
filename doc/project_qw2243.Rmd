@@ -1,26 +1,28 @@
 ---
 title: "U.S. Presidents and History"
-output: html_notebook
+output:
+  html_notebook: default
+  html_document: default
+  pdf_document: default
 ---
 >#**From George Washington to Donald Trump**
 >#**A close look into the Presidents' Inaugural speeches and it's connection to history**
 
-The inauguration is considered as one of the most important moments for U.S. Presidents. The newly elected president will be inducted into the president's position. The inaugural speech is the first official speech delivered by the president. 
-In this project, I have applied texting mining techniques to 58 inaugural speeches to explore the themes and concentration during their inauguration speech, and study the relation with historic events.
+The inauguration is considered as one of the most important moments for U.S. Presidents. The newly elected president will be inducted into the president's position. The inaugural speech is the first official speech delivered by the president. What
+In this project, I have applied texting mining techniques to 58 inaugural speeches to explore the themes and concentration during their inauguration speech, and study the relation with historic events. 
 
 
 ```{r, message=FALSE, warning=FALSE}
-setwd("/Users/whs/Documents/GitHub/Spring2018-Project1-qw2243c/data")
+setwd("/Users/whs/Documents/GitHub/Spring2018-Project1-qw2243c")
 ```
-How the inaugural speeches of U.S. presidents reveal the underlying history background?
-how indicative their topics is to reveal the current situation of America
 
 ```{r, message=FALSE, warning=FALSE}
 ###install packages needed
-packages.used=c("rvest", "tibble", "qdap", "gplots", "dplyr","gcookbook",
-                "tm", "syuzhet", "factoextra", "scales", "RColorBrewer","wordcloud",
-                "RANN", "tm", "topicmodels","beeswarm","cluster","tidytext")
-
+packages.used=c("rvest", "tibble", "qdap", 
+                "sentimentr", "gplots", "dplyr",
+                "tm", "syuzhet", "factoextra", 
+                "beeswarm", "scales", "RColorBrewer",
+                "RANN", "topicmodels", "wordcloud", "tydytext")
 # check packages that need to be installed.
 packages.needed=setdiff(packages.used, 
                         intersect(installed.packages()[,1], 
@@ -30,21 +32,25 @@ if(length(packages.needed)>0){
   install.packages(packages.needed, dependencies = TRUE)
 }
 
-
 # load packages
-library("tibble")
-library("qdap")   
+library("qdap")
+library("sentimentr")
 library("gplots")
 library("dplyr")
-library("tm") 
+library("tm")
+library("syuzhet")
+library("factoextra")
+library("beeswarm")
 library("scales")
+library("RColorBrewer")
 library("RANN")
 library("tm")
 library("topicmodels")
-library("cluster") 
-library("tidytext")
 library("wordcloud")
-library("RColorBrewer")
+library("tidytext")
+
+source("../lib/plotstacked.R")
+source("../lib/speechFuncs.R")
 ```
 
 # Step 1: read the inaugural speeches data
@@ -71,13 +77,12 @@ speech.info   <- paste(speech.info$File, "-" , speech.info$Term, sep= "")
 
 #reorder the speeches according to presidency sequence:
 seq <- sapply(speech.info, grep, speech.seq)
-text.file <-data.frame(text.file[seq, 1])
+text.file <- data.frame(text.file[seq, 1])
 head(text.file, 8)
 ```
 
 #Step 2 - text processing & overall WordCloud
-Before starting to analyze the text, I want to modify the content of the inaugural speeches texts, by coverting upper-case characters in a character vector to lower-case, removing extra white space, english stopwords, empty words and punctuation. Then construct a term-document Matrix to analyze the overall wordcloud  
-over the 58 inaugural speeches given by the 45 presidents in the U.S. history. 
+Before starting to analyze the text, I want to modify the content of the inaugural speeches texts, by coverting upper-case characters in a character vector to lower-case, removing extra white space, english stopwords, empty words and punctuation. Then construct a term-document Matrix to analyze the overall wordcloud over the 58 inaugural speeches given by the 45 presidents in the U.S. history. 
 
 ```{r, fig.height=5, fig.width=5}
 file  <-tm_map(file, content_transformer(tolower))  
@@ -102,10 +107,10 @@ wordcloud(tdm.overall$term, tdm.overall$`sum(count)`,
 
 ```
 We can see that the most frequently used words in presidents' inaugural speeches are "Government", "states", "people", "world" and "will", "shall", "must", "can". 
-Given that the inaugural speech represents the very begining of the president's term of office and delivers to the whole nations, most presidents tended to reiterate and emphasize the core values related to the country and discussed the topics related to "government", "states" and "people". In addition, they expressed their determinations and willingness in solving the issues people were concerned about, by using the words like "will", "shall" and "must". The wordcloud reveals 100 words, most of which are the most frequently used words in public speeches. 
+Given that the inaugural speech represents the very begining of the president's term of office and delivers to the whole nation, most presidents tended to reiterate and emphasize the core values related to the country and discussed the topics related to "government", "states" and "people". In addition, they expressed their determinations and willingness in solving the issues people were concerned about, by using the words like "will", "shall" and "must". The wordcloud reveals 100 words, and we can easily to conclude that most of them are the frequently used words in public speeches. 
 
 
-Next, I'm interested in the concentration and emphasis of individual president's speeches over different periods of the history and the connections with the significant historical events. I chose the five most representative prisidents, George Washington (1789-1797), Abraham Lincoln(1861–1865), Franklin D. Roosevelt(1933–1945), John F. Kennedy(1961–1963), George W. Bush(2001-2009) from the list and analyze their wordcloud seperately. 
+Next, I'm interested in the concentration and emphasis of individual president's speeches over different periods of the history and the connections with the significant historical events. I chose the five most representative prisidents in the history, George Washington (1789-1797), Abraham Lincoln(1861–1865), Franklin D. Roosevelt(1933–1945), John F. Kennedy(1961–1963), George W. Bush(2001-2009) from the list and analyzed their wordcloud seperately. 
 
 # Step 3 Individual presidnt's WordCloud
 ```{r, message=FALSE, warning=FALSE}
@@ -123,12 +128,14 @@ dtm.1  <-DocumentTermMatrix(file.1,
 
 ff.dtm.1 <- tidy(dtm.1)
 ### President George Washington
-wordcloud(ff.dtm.1$term[ff.dtm.1$document==1],ff.dtm.1$count[ff.dtm.1$document==1],
+wordcloud(ff.dtm.1$term[ff.dtm.1$document==1],
+          ff.dtm.1$count[ff.dtm.1$document==1],
           scale=c(3 ,0.4), min.freq=1, max.words= 80, 
           random.order=FALSE, random.color = FALSE,
           rot.per=0.2, colors=brewer.pal(4, "OrRd"))
 ### President Abraham Lincoln
-wordcloud(ff.dtm.1$term[ff.dtm.1$document==19],ff.dtm.1$count[ff.dtm.1$document==19],
+wordcloud(ff.dtm.1$term[ff.dtm.1$document==19],
+          ff.dtm.1$count[ff.dtm.1$document==19],
           scale=c(3 ,0.4), min.freq=1, max.words= 80, 
           random.order=FALSE, random.color = FALSE,
           rot.per=0.2, colors=brewer.pal(5, "OrRd"))
@@ -140,7 +147,8 @@ wordcloud(ff.dtm.1$term[ff.dtm.1$document==37&38&39&40],
           rot.per=0.2, colors=brewer.pal(4, "OrRd"))
 
 ### President John F. Kennedy
-wordcloud(ff.dtm.1$term[ff.dtm.1$document==44],ff.dtm.1$count[ff.dtm.1$document==44],
+wordcloud(ff.dtm.1$term[ff.dtm.1$document==44],
+          ff.dtm.1$count[ff.dtm.1$document==44],
           scale=c(3 ,0.7), min.freq=1, max.words= 80, 
           random.order=FALSE, random.color = FALSE,
           rot.per=0.2, colors=brewer.pal(5, "OrRd"))
@@ -152,10 +160,10 @@ wordcloud(ff.dtm.1$term[ff.dtm.1$document==55 ],ff.dtm.1$count[ff.dtm.1$document
           rot.per=0.2, colors=brewer.pal(6, "OrRd"))
 
 ```
-If I compare the results from the two speeches from the very first prrsident George Washington, the most commonly used words are "providential", "immutable", "arrive". This is consistent with the then historical background that Washington, as the founder of the new established country, illustraed his political philosophy of seperation of powers and the formulation of a unifying Constitution. Lacking precedents to guide, Washington called to attention of the "pure and immutable principles" and wish the country to thrive. 
+If I compare the results of the two speeches from the very first president George Washington, the most commonly used words are "providential", "immutable", "arrive". This is consistent with the then historical background that Washington, as the founder of the newly-established country, illustrated his political philosophy of seperation of powers and the formulation of a unifying Constitution. Lacking precedents to guide, Washington called to attention of the "pure and immutable principles" and wished the country to thrive. 
 
 
-Next, if we look into President Abraham Lincoln's speeches, the most commonly used words are "minority", "secede", "surrendered", "offenses" and "slaves". President Lincoln was regarded as one of the most honorable president because he led the United States through its Civil War. In that bloodiest era, he not only preserved the Union and strengthened the federal government, but also paved the way for the abolition of slavery. The words in the WordCloud are obviously related to the topics of slavery and Civil War. 
+Next, if we look into President Abraham Lincoln's speeches, the most commonly used words are "minority", "secede", "surrendered", "offenses" and "slaves". President Lincoln was regarded as one of the most honorable president because he led the United States through its Civil War. In that bloodly era, he not only preserved the Union and strengthened the federal government, but also paved the way for the abolition of slavery. The words in the WordCloud are obviously related to the topics of slavery and Civil War. 
 
 
 Another important president in the history is Franklin D. Roosevelt, who was the first and only U.S. President to serve for more than two terms. He directed the United States federal government escaping the Great Depression, implementing the New Deal domestic agenda in response to the worst economic crisis in U.S. history. The important words including "emergency", "striken", "stagnation" and "epidemics" exactly revealed the economy situation during the Great Depression. 
@@ -165,10 +173,10 @@ The next one is president John F. Kennedy. The core keyword in his speech was "s
 
 The last one is the president George W. Bush, who led the America go through the September 11 terrorist attacks in his first term. As a response to terrorists, he launched the famous "War on Terror" (an international mility campaign) including the war in Afghanistan in 2001 and Iraq in 2003. In his speech of the re-election, he talked about the american spirit and core values like "freedom", "soul" and against "tyranny". 
 
-Those individual speeches shows that the history, in another words, the domestic and international situation has an impact on president's inaugural speeches and the following decision-making in his term. In turn, president's decision-making would also influence the history.
+Those individual speeches show that the history, in another words, the domestic and international situation has an impact on president's inaugural speeches and the following decision-makings in his term. In turn, president's decision-making would also influence the history.
 
 
-Furthermore, I would also like to see if the contents from two different presidents would vary a lot given they are from totally different historical backgrounds. 
+Furthermore, I would also like to see if the speech contents from two different presidents would vary a lot given they are from totally different historical backgrounds. 
 I applied the TF-IDF weighted document-term matrices for individual speeches to identify the the most relevant and important words and interactively mapping the important words between two presidents in wordcloud within a web application by using Shiny-package.
 ```{r}
 file   <- Corpus(DirSource(folder.path))
@@ -179,8 +187,7 @@ dtm <- DocumentTermMatrix(file,
 ff.dtm=tidy(dtm)
 
 library(shiny)
-shinyApp(
-    ui = fluidPage(
+shinyApp(ui = fluidPage(
       fluidRow(style = "padding-bottom: 20px;",
         column(4, selectInput('speech1', 'Speech 1',
                               speeches,
@@ -203,6 +210,7 @@ shinyApp(
              dtm.count1=ff.dtm$count[ff.dtm$document==as.character(input$speech1)],
              dtm.term2=ff.dtm$term[ff.dtm$document==as.character(input$speech2)],
              dtm.count2=ff.dtm$count[ff.dtm$document==as.character(input$speech2)])
+        
       })
 
       output$wordclouds <- renderPlot(height = 400, {
