@@ -1,7 +1,7 @@
 ## STAT GR5243 Spring 2018 Applied Data Science
 ### Project 1 An R Notebook Data Story on presidential inaugural speeches
 
-![image](../figs/44Presidents iotacon.png)
+![image](../figs/44Presidents.png)
 
 Inaugural speech is the first official speech of any president of United States. It is the first time the public get to hear the president's plan for the next 100 days or 4 years. Historians who studied [1][2] past presidential inaugural speeches concluded that the speeches persistently demonstrated American ideological values over time, with constant shifts of emphasis in different eras. Natural language processing and text mining are promising tools to derive new findings in this collection of historical documents. [3]
 
@@ -11,7 +11,7 @@ Inaugural speech is the first official speech of any president of United States.
 
 [3] Shahin, Saif. "When scale meets depth: Integrating natural language processing and textual analysis for studying digital corpora." Communication Methods and Measures 10.1 (2016): 28-50.
 
-![image](../figs/inauguration jfk.jpg)
+
 The inauguration is considered as one of the most important moments for U.S. Presidents. The newly elected president will be inducted into the president's position. The inaugural speech is the first official speech delivered by the president. 
 In this project, I have applied texting mining techniques to 58 inaugural speeches to explore the themes and concentration during their inauguration speech, and study the relation with historic events.
 In this project we will explore the texts of U. S. presidents' inaugrual speeches, from that of George Washington to that of Donald Trump which was delivered earlier this year. 

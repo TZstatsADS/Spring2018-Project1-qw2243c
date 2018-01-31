@@ -8,7 +8,7 @@ output:
 >#**From George Washington to Donald Trump**
 >#**A close look into the Presidents' Inaugural speeches and it's connection to history**
 
-The inauguration is considered as one of the most important moments for U.S. Presidents. The newly elected president will be inducted into the president's position. The inaugural speech is the first official speech delivered by the president. What
+The inauguration is considered as one of the most important moments for U.S. Presidents. The newly elected president will be inducted into the president's position. The inaugural speech is the first official speech delivered by the president. 
 In this project, I have applied texting mining techniques to 58 inaugural speeches to explore the themes and concentration during their inauguration speech, and study the relation with historic events. 
 
 
