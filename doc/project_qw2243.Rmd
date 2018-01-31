@@ -18,39 +18,34 @@ setwd("/Users/whs/Documents/GitHub/Spring2018-Project1-qw2243c")
 
 ```{r, message=FALSE, warning=FALSE}
 ###install packages needed
-packages.used=c("rvest", "tibble", "qdap", 
-                "sentimentr", "gplots", "dplyr",
-                "tm", "syuzhet", "factoextra", 
-                "beeswarm", "scales", "RColorBrewer",
-                "RANN", "topicmodels", "wordcloud", "tydytext")
+packages.used=c("rvest", "tibble","qdap",
+                "gplots", "dplyr", "tm", 
+                "syuzhet", "factoextra", "scales",
+                "RColorBrewer","RANN", "wordcloud", "tidytext")
 # check packages that need to be installed.
 packages.needed=setdiff(packages.used, 
                         intersect(installed.packages()[,1], 
                                   packages.used))
 # install additional packages
 if(length(packages.needed)>0){
-  install.packages(packages.needed, dependencies = TRUE)
+  install.packages(packages.needed, dependencies = TRUE, repos = "http://cran.us.r-project.org")
 }
 
 # load packages
+library("rvest")
 library("qdap")
-library("sentimentr")
+library("tibble")
 library("gplots")
 library("dplyr")
 library("tm")
 library("syuzhet")
 library("factoextra")
-library("beeswarm")
 library("scales")
 library("RColorBrewer")
 library("RANN")
-library("tm")
-library("topicmodels")
 library("wordcloud")
 library("tidytext")
 
-source("../lib/plotstacked.R")
-source("../lib/speechFuncs.R")
 ```
 
 # Step 1: read the inaugural speeches data
@@ -106,6 +101,7 @@ wordcloud(tdm.overall$term, tdm.overall$`sum(count)`,
           colors=brewer.pal(3,"YlOrRd"))
 
 ```
+
 We can see that the most frequently used words in presidents' inaugural speeches are "Government", "states", "people", "world" and "will", "shall", "must", "can". 
 Given that the inaugural speech represents the very begining of the president's term of office and delivers to the whole nation, most presidents tended to reiterate and emphasize the core values related to the country and discussed the topics related to "government", "states" and "people". In addition, they expressed their determinations and willingness in solving the issues people were concerned about, by using the words like "will", "shall" and "must". The wordcloud reveals 100 words, and we can easily to conclude that most of them are the frequently used words in public speeches. 
 
@@ -133,12 +129,14 @@ wordcloud(ff.dtm.1$term[ff.dtm.1$document==1],
           scale=c(3 ,0.4), min.freq=1, max.words= 80, 
           random.order=FALSE, random.color = FALSE,
           rot.per=0.2, colors=brewer.pal(4, "OrRd"))
+
 ### President Abraham Lincoln
 wordcloud(ff.dtm.1$term[ff.dtm.1$document==19],
           ff.dtm.1$count[ff.dtm.1$document==19],
           scale=c(3 ,0.4), min.freq=1, max.words= 80, 
           random.order=FALSE, random.color = FALSE,
           rot.per=0.2, colors=brewer.pal(5, "OrRd"))
+
 ### President Franklin D. Roosevelt
 wordcloud(ff.dtm.1$term[ff.dtm.1$document==37&38&39&40],
           ff.dtm.1$count[ff.dtm.1$document==37&38&39&40],

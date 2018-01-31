@@ -12,7 +12,7 @@ Term: Spring 2018
 + Projec title: U.S. Presidents and History
 + This project is conducted by qianhui(Karlie)
 
-+ Project summary: The inauguration is considered as one of the most important moments for U.S. Presidents. The newly elected president will be inducted into the president's position. The inaugural speech is the first official speech delivered by the president. 
++ Project summary: The inauguration is considered as one of the most important moments for U.S. Presidents. The newly elected president will be inducted into the president's position. The inaugural speech is the first official speech delivered by the president. In this project, I have applied texting mining techniques to 58 inaugural speeches to explore the themes and concentration during their inauguration speech, and study the relation with historic events. 
 
 ![image](figs/inaugurationjfk.jpg)
 
