@@ -2,8 +2,7 @@
 title: "U.S. Presidents and History"
 output:
   html_notebook: default
-  html_document: default
-  pdf_document: default
+  
 ---
 >#**From George Washington to Donald Trump**
 >#**A close look into the Presidents' Inaugural speeches and it's connection to history**
@@ -13,14 +12,9 @@ In this project, I have applied texting mining techniques to 58 inaugural speech
 
 
 ```{r, message=FALSE, warning=FALSE}
-setwd("/Users/whs/Documents/GitHub/Spring2018-Project1-qw2243c")
-```
-
-```{r, message=FALSE, warning=FALSE}
 ###install packages needed
 packages.used=c("rvest", "tibble","qdap",
                 "gplots", "dplyr", "tm", 
-                "syuzhet", "factoextra", "scales",
                 "RColorBrewer","RANN", "wordcloud", "tidytext")
 # check packages that need to be installed.
 packages.needed=setdiff(packages.used, 
@@ -38,9 +32,6 @@ library("tibble")
 library("gplots")
 library("dplyr")
 library("tm")
-library("syuzhet")
-library("factoextra")
-library("scales")
 library("RColorBrewer")
 library("RANN")
 library("wordcloud")
