@@ -13,9 +13,10 @@ In this project, I have applied texting mining techniques to 58 inaugural speech
 
 ```{r, message=FALSE, warning=FALSE}
 ###install packages needed
-packages.used=c("rvest", "tibble","qdap",
-                "gplots", "dplyr", "tm", 
-                "RColorBrewer","RANN", "wordcloud", "tidytext")
+packages.used=c("wordcloud","tidytext","rvest", "tibble", "qdap", 
+                "sentimentr", "gplots", "dplyr",
+                "tm", "syuzhet", "factoextra", "scales", "RColorBrewer",
+                "RANN", "topicmodels")
 # check packages that need to be installed.
 packages.needed=setdiff(packages.used, 
                         intersect(installed.packages()[,1], 
@@ -27,9 +28,13 @@ if(length(packages.needed)>0){
 
 # load packages
 library("rvest")
+library("sentimentr")
 library("qdap")
 library("tibble")
 library("gplots")
+library("syuzhet")
+library("factoextra") 
+library("scales")
 library("dplyr")
 library("tm")
 library("RColorBrewer")
@@ -65,6 +70,22 @@ speech.info   <- paste(speech.info$File, "-" , speech.info$Term, sep= "")
 seq <- sapply(speech.info, grep, speech.seq)
 text.file <- data.frame(text.file[seq, 1])
 head(text.file, 8)
+
+## or scrap speeches online
+main.page <- read_html(x = "http://www.presidency.ucsb.edu/inaugurals.php")
+inaug=f.speechlinks(main.page)
+inaug=inaug[-nrow(inaug),] # remove the last line, irrelevant due to error.
+inaug.list=read.csv("../data/inauglist.csv", stringsAsFactors = FALSE)
+inaug.list <- cbind(inaug.list, inaug)
+inaug.list$fulltext=NA
+for(i in seq(nrow(inaug.list))) {
+  text <- read_html(inaug.list$urls[i]) %>% # load the page
+    html_nodes(".displaytext") %>% # isloate the text
+    html_text() # get the text
+  inaug.list$fulltext[i]=text
+}
+
+year<- substr(inaug.list$links, nchar(inaug.list$links)-3, nchar(inaug.list$links))
 ```
 
 #Step 2 - text processing & overall WordCloud
@@ -164,9 +185,10 @@ The last one is the president George W. Bush, who led the America go through the
 
 Those individual speeches show that the history, in another words, the domestic and international situation has an impact on president's inaugural speeches and the following decision-makings in his term. In turn, president's decision-making would also influence the history.
 
-
+# Step 4 interactive WordCloud between different presidents
 Furthermore, I would also like to see if the speech contents from two different presidents would vary a lot given they are from totally different historical backgrounds. 
 I applied the TF-IDF weighted document-term matrices for individual speeches to identify the the most relevant and important words and interactively mapping the important words between two presidents in wordcloud within a web application by using Shiny-package.
+
 ```{r}
 file   <- Corpus(DirSource(folder.path))
 dtm <- DocumentTermMatrix(file,
@@ -236,7 +258,63 @@ For example, if we compare the inaugural speeches from Donald Trump and Ronald R
 
 Therefore different presidents were facing with the different challenges and issues, both domestic and international. Their iaugural specches would deliver different themes, policies and strategies. 
 
+# Step 5 Sentimental Analysis
+The next step is to analysis whether the presidents' emotions revealed in their inaugural speeches have some association with historical events. For example, during the Great Depression, World War II or Civil War, were the presidents during those periods having some negative emotions. What was the dominate emotion during their speeches? 
+
+The way is to use sentences as units of analysis, given sentences are natural languge units for organizing thoughts and ideas. For each extracted sentence, I  will apply sentiment analysis using NRC sentiment lexion which is a list of English words and the associations with eight basic emotions (anger, fear, anticipation, trust, surprise, sadness, joy, and disgust) and two sentiments (negative and positive).
+```{r}
+## generate lists of sentences
+sentence.list=NULL
+for(i in 1:nrow(inaug.list)){
+  sentences=sent_detect(inaug.list$fulltext[i],
+                        endmarks = c("?", ".", "!", "|",";"))
+  if(length(sentences)>0){
+    emotions=get_nrc_sentiment(sentences)
+    word.count=word_count(sentences)
+    # colnames(emotions)=paste0("emo.", colnames(emotions))
+    # in case the word counts are zeros?
+    emotions=diag(1/(word.count+0.01))%*%as.matrix(emotions)
+    sentence.list=rbind(sentence.list, 
+                        cbind(inaug.list[i,-ncol(inaug.list)],
+                              sentences=as.character(sentences), 
+                              word.count,
+                              emotions,
+                              sent.id=1:length(sentences),
+                              row.names=NULL
+                              )
+    )
+  }
+}
+
+sentence.list= sentence.list%>%
+                filter(!is.na(word.count)) 
+year <- as.numeric(year)
+
+## President BarackObama
+par(mar=c(4, 6, 2, 1))
+emo.means=colMeans(select(sentence.list[sentence.list$President == "Barack Obama", ], anger:trust)>0.01)
+col.use= brewer.pal(2, "OrRd")
+barplot(emo.means[order(emo.means)], las=2, col=brewer.pal(5, "Blues"), horiz=F, main="Inauguration Speeches emotions")
+
+## President Abraham Lincolm
+par(mar=c(4, 6, 2, 1))
+emo.means=colMeans(select(sentence.list[sentence.list$President == "Abraham Lincoln", ], anger:trust)>0.01)
+col.use= brewer.pal(2, "OrRd")
+barplot(emo.means[order(emo.means)], las=2, col=brewer.pal(5, "Blues"), horiz=F, main="Inauguration Speeches emotions")
+
+## President RonaldReagan
+par(mar=c(4, 6, 2, 1))
+emo.means=colMeans(select(sentence.list[sentence.list$President == "Ronald Reagan", ], anger:trust)>0.01)
+col.use= brewer.pal(2, "OrRd")
+barplot(emo.means[order(emo.means)], las=2, col=brewer.pal(5, "Blues"), horiz=F, main="Inauguration Speeches emotions")
 
 
 
- 
+````
+
+Based on the output we get, we can conclude that the negative sentiment scores from presidents' speeches are tended to be lower in general. Afterall, no matter what they were faced with, the presidents definitely would convey a positive sentiment to the public and the country. Those words were mainly assigned in the "Trust", "Anticipation" and "Joy" categories.
+However, I'm assuming when the nation went through tough periods, the president would definitely bear more burden and pressure in his term, therefore there was also a considerably proportion of low sentiment score in "disgust., "anger" and "sadness". Those important historical events, like the pre-civil war turbulence before Lincoln's term, the Cold War before Reagan's term and the economy crisis before Obama would surely influence their emotions and attitudes in the inaugural speeches. 
+
+In conclusion, the presidents' inaugural speeches are closely related to the relevant history and important historical events, both in the contents and sentiments. I think if we could also collect data(speeches) that were taken during their terms, more forms of connections can be revealed.
+
+
